@@ -1,0 +1,25 @@
+- hosts: localhost
+  connection: local
+  become: true
+  tasks:
+  - name: install nginx
+    apt:
+      name: nginx
+      state: present
+      update_cache: true
+
+  - name: Copy nginx file over
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+    register: nginx_config
+
+  - name: debug that will copy nginx over
+    debug:
+    msg: "copy nginx file over"
+    
+  - name: Restart nginx if needed
+    service:
+      name: nginx
+      state: restarted
+    when: nginx_config.changed == true
